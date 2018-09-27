@@ -73,17 +73,11 @@ class PersonDetector(object):
             cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
             count+= 1
         
-         if count > 0:
+        if count > 0:
             print('Count: {}'.format(count))
             elapsed = time.time() - self.last_upload
             if elapsed > 30:
                 request(count)
-                self.last_upload = time.time()
-            
-                  
-                   
-                
-                
-                
+                self.last_upload = time.time()      
                 
         return frame
