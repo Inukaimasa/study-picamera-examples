@@ -55,6 +55,7 @@ class PersonDetector(object):
         net.setInput(blob)
         detections = net.forward()
 
+        count = 0
         for i in np.arange(0, detections.shape[2]):
             confidence = detections[0, 0, i, 2]
 
