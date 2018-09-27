@@ -6,10 +6,26 @@ import time
 import datetime
 import numpy as np
 import cv2
+from datetime import datetime
+import ambient
+import os
+import sys
+
+try:        
+    AMBIENT_CHANNEL_ID = int(os.environ['AMBIENT_CHANNEL_ID'])
+    AMBIENT_WRITE_KEY = os.environ['AMBIENT_WRITE_KEY']
+except KeyError as e:
+    sys.exit('Couldn\'t find env: {}'.format(e))
+am = ambient.Ambient(AMBIENT_CHANNEL_ID, AMBIENT_WRITE_KEY)
 
 
 net = cv2.dnn.readNetFromCaffe('/home/pi/models/MobileNetSSD_deploy.prototxt',
         '/home/pi/models/MobileNetSSD_deploy.caffemodel')
+def request(count):
+    am.send({
+        'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'd1': count,
+    })
 
 
 class PersonDetector(object):
@@ -55,5 +71,19 @@ class PersonDetector(object):
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
             y = startY - 15 if startY - 15 > 15 else startY + 15
             cv2.putText(frame, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-
+            count+= 1
+        
+         if count > 0:
+            print('Count: {}'.format(count))
+            elapsed = time.time() - self.last_upload
+            if elapsed > 30:
+                request(count)
+                self.last_upload = time.time()
+            
+                  
+                   
+                
+                
+                
+                
         return frame
